@@ -1,9 +1,13 @@
-from sqlalchemy import MetaData, create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
+import os
+from dotenv import load_dotenv
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncAttrs
 
-engine = create_engine("sqlite:///database.db")
-Session = sessionmaker(engine)
-session = Session()
+load_dotenv()
+engine = create_async_engine(url=os.getenv("DATABASE_URL"))
+async_session = async_sessionmaker(bind=engine)
 
-class Base(DeclarativeBase):
-    metadata = MetaData()
+class Base(AsyncAttrs, DeclarativeBase):
+    __abstract__ = True
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
