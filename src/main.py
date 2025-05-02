@@ -9,9 +9,9 @@ dp.include_router(router)
 
 async def main():
 
-    # Путь в load_dotenv указывается опционально, можно и просто load_dotenv()
+    # Путь "dotenv_path=" в load_dotenv() указывается опционально
 
-    load_dotenv(dotenv_path="C:\\Users\\Александр\\PycharmProjects\\ListOfCases\\.env")
+    load_dotenv()
     bot = Bot(token=os.getenv("TOKEN"))
     await dp.start_polling(bot)
 

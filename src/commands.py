@@ -11,11 +11,20 @@ async def start(message: Message):
     await message.answer("Привет! Что хочешь записать?")
 
 
+@router.message(Command(commands="cancel"))
+async def cancel(message: Message):
+    await message.answer("Функция в разработке...")
+
+
 @router.message()
 async def save_case(message: Message):
-    async with async_session() as session:
-        new_case = CaseModel(case=message.text)
-        session.add(new_case)
-        await session.commit()
-    await message.answer("Готово! Запись сделана.")
-
+    msg = message.text.split("#")
+    try:
+        async with async_session() as session:
+            new_case = CaseModel(tag=msg[0], case=msg[1].strip())
+            session.add(new_case)
+            await session.commit()
+        await message.answer("""Готово! Заметка добавлена в базу данных.
+        Для отмены нажмите /cancel""")
+    except:
+        await message.answer("Ошибка! Заметка должна быть в формате:\n tag#\n text")
