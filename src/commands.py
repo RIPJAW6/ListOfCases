@@ -12,7 +12,8 @@ ram = []
 async def start(message: Message):
     await message.answer("""Привет! Что хочешь записать в базу данных?
 Я принимаю записи в формате: тег# текст
-Для поиска всех заметок по тегу, введи запрос в формате: тег$""")
+Для поиска заметок по тегу введите запрос в формате: тег$
+Для просмотра уже существующих тегов в базе данных нажмите /tags""")
 
 
 @router.message(Command(commands="cancel"))
@@ -26,6 +27,15 @@ async def cancel(message: Message):
         ram.clear()
     except:
         await message.answer("Добавление последней заметки уже было отменено.")
+
+
+@router.message(Command(commands="tags"))
+async def tags(message: Message):
+    async with async_session() as session:
+        all_tags = select(CaseModel.tag).distinct()
+        results = await session.execute(all_tags)
+        for result in results.scalars():
+            await message.answer(f"{result}")
 
 
 async def search(msg) -> list:
@@ -63,4 +73,5 @@ async def msg_processing(message: Message):
         result_2 = await insert(msg)
         await message.answer(result_2)
     else:
-        await message.answer("Ошибка! Заметка должна быть в формате: тег# текст")
+        await message.answer("""Ошибка! Заметка должна быть в формате: тег# текст
+Для поиска заметок по тегу введите запрос в формате: тег$ """)
