@@ -8,4 +8,4 @@ class CaseModel(Base):
     case: Mapped[str]
 
     def __repr__(self):
-        return f"{self.tag.capitalize()}\n{self.case}"
+        return f"{self.tag}\n{self.case}"

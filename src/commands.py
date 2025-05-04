@@ -39,7 +39,7 @@ async def tags(message: Message):
 
 
 async def search(msg) -> list:
-    search_query = msg.split("$")[0].strip().lower()
+    search_query = msg.split("$")[0].strip().capitalize()
     async with async_session() as session:
         request = select(CaseModel).filter_by(tag=search_query)
         results = await session.execute(request)
@@ -50,7 +50,7 @@ async def insert(msg):
     ram.clear()
     request_to_add = msg.split("#")
     async with async_session() as session:
-        new_case = CaseModel(tag=request_to_add[0].strip().lower(), case=request_to_add[1].strip())
+        new_case = CaseModel(tag=request_to_add[0].strip().capitalize(), case=request_to_add[1].strip())
         session.add(new_case)
         await session.commit()
         ram.append(request_to_add[0])
@@ -62,14 +62,14 @@ async def insert(msg):
 @router.message()
 async def msg_processing(message: Message):
     msg = message.text
-    if "$" in msg:
+    if "$" in msg and msg.count("$") == 1:
         results = await search(msg)
         if len(results) == 0:
             await message.answer("По указанному тегу ничего не найдено.")
         else:
             for result in results:
                 await message.answer(f"{result}")
-    elif "#" in msg:
+    elif "#" in msg and msg.count("#") == 1:
         result_2 = await insert(msg)
         await message.answer(result_2)
     else:
